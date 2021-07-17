@@ -1,0 +1,16 @@
+{
+    "configurations": [
+    {
+        "name": "(lldb) Launch",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/philo",
+        "args": ["3", "600", "677", "65"],
+        "stopAtEntry": false,
+        "cwd": "${fileDirname}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "lldb"
+    }
+    ]
+}

@@ -8,7 +8,9 @@ LIBFT = -L. -lft
 
 SRC_DIR = src/
 
-SRC_LIST = philo.c \
+SRC_LIST = 	philo.c \
+			libft.c \
+			utils.c \
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_LIST))
 
@@ -18,23 +20,22 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo "\n"
-	@echo "\033[0;32mCompiling philo..."
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
-	@echo "\n\033[0mDone !"
+	@echo "\033[0;33mCompiling philo..."
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+	@echo "\n\033[0;32m* * * SUCCESS * * *\n"
+	@echo "\033[0;32mCreated file philo\n"
 
 %.o: %.c
-	@printf "\033[0;33mGenerating philo objects... %-33.33s\r" $@
+	@printf "\n\033[0;33mGenerating philo objects... %-33.33s\r" $@
 	@${CC} -g ${CFLAGS} -c $< -o $@
 
 clean:
-	@echo "\033[0;31mCleaning libft..."
-	@make clean -C libft/
-	@echo "\nRemoving binaries..."
+	@echo "\n\033[0;31mRemoving binaries..."
 	@rm -f $(OBJ)
 	@echo "\033[0m"
 
 fclean:
-	@echo "\nDeleting objects..."
+	@echo "\n\033[0;31mDeleting objects..."
 	@rm -f $(OBJ)
 	@echo "\nDeleting executable..."
 	@rm -f $(NAME)
