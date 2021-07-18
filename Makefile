@@ -11,6 +11,7 @@ SRC_DIR = src/
 SRC_LIST = 	philo.c \
 			libft.c \
 			utils.c \
+			activity.c
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_LIST))
 
