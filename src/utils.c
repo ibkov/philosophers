@@ -11,3 +11,17 @@ long int get_time_now()
 	time = (cur_time.tv_sec * 1000) + (cur_time.tv_usec / 1000);
 	return (time);
 }
+
+void				ph_sleep(int t)
+{
+	int				delta;
+	int				start;
+
+	start = get_time_in_ms();
+	delta = 0;
+	while (delta < t)
+	{
+		delta = get_time_in_ms() - start;
+		usleep(100);
+	}
+}

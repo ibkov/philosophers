@@ -16,7 +16,7 @@ int ft_strdigit(char **argv, int i, int j)
     return (1);
 }
 
-int check_negative(t_list *philo)
+int check_negative(t_info *philo)
 {
     if (philo->count_ph <= 0 || philo->time_to_die <= 0 || \
         philo->time_to_eat <= 0 || philo->time_to_sleep <= 0)
@@ -24,20 +24,33 @@ int check_negative(t_list *philo)
     return (1);
 }
 
+void init_mutex(t_all *all, int i)
+{
+    while (i < all->info.count_ph)
+        pthread_mutex_init(&all->info.forks[i++], NULL);
+    // pthread_mutex_init(&all->info.ph_death, NULL);
+    // pthread_mutex_init(&all->info.ph_print, NULL);
+    // pthread_mutex_init(&all->info.ph_time, NULL);
+}
+
 int parse_and_check_argv(int argc, char **argv, t_all *all)
 {
     if ((argc == 5 || argc == 6) && ft_strdigit(argv, 1, 0))
     {
-        all->arg.count_ph = ft_atoi(argv[1]);
-        all->arg.time_to_die = ft_atoi(argv[2]);
-        all->arg.time_to_eat = ft_atoi(argv[3]);
-        all->arg.time_to_sleep = ft_atoi(argv[4]);
-        all->arg.nbr_each_philo_to_eat = 0;
+        all->info.count_ph = ft_atoi(argv[1]);
+        all->info.time_to_die = ft_atoi(argv[2]);
+        all->info.time_to_eat = ft_atoi(argv[3]);
+        all->info.time_to_sleep = ft_atoi(argv[4]);
+        all->info.nbr_each_philo_to_eat = -1;
     }
     if (argc == 6)
-        all->arg.nbr_each_philo_to_eat = ft_atoi(argv[5]);
-    if (!(check_negative(&all->arg)))
-        return (0);
+        all->info.nbr_each_philo_to_eat = ft_atoi(argv[5]);
+    if (!(check_negative(&all->info)))
+        return print_error("ERROR IN ARGUMENTS");
+    all->info.forks = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t) * all->info.count_ph);
+    if (!all->info.forks)
+        return print_error("ERROR MALLOC");
+    init_mutex(all, 0);
     return (1);
 }
 
@@ -48,56 +61,54 @@ int print_error(char *str)
     return (0);
 }
 
-void *monit_death(void *ph)
+static void		init_each_ph(t_all *all, t_philo *phi, int i)
 {
-     t_philo *philos;
-
-    philos = (t_philo *)ph;
-    while(1)
-    {
-        if (get_time_now() - philos->last_eat > philos->main_info->time_to_die)
-        {
-
-        }
-    }
+	phi->id = i + 1;
+	phi->time_to_eat = all->info.time_to_eat;
+	phi->main_info = all->info;
 }
 
-void *activity(void *ph)
+int start_activity(t_all *all, int i)
 {
-    t_philo *philos;
-    pthread_t dead;
+    pthread_t   *philo_threads;
+    t_philo     *phi;
 
-    philos = (t_philo *)ph;
-    philos->last_eat = get_time_now();
-    pthread_create(&dead, NULL, monit_death, ph);
-    while (1)
+    philo_threads = (pthread_t *)malloc(sizeof(pthread_t) * all->info.count_ph);
+    phi = (t_philo*)malloc(sizeof(t_philo) * all->info.count_ph);
+    if (!philo_threads || !phi)
+        return print_error("ERROR MALLOC");
+    while (i < all->info.count_ph)
     {
-
+        init_each_ph(all, &phi[i], i);
+        if (pthread_create(&philo_threads[i], NULL, activity, &phi[i]))
+			return (1);
+        i++;
     }
-    return (NULL);
+    while (i < all->info.count_ph)
+    {
+        if (pthread_join(philo_threads[i], NULL))
+			return (1);
+		if (pthread_mutex_destroy(&all->info.forks[i]))
+			return (1);
+        i++;
+    }
+    free(phi);
+    free(philo_threads);
+    return (1);
 }
 
 int main(int argc, char **argv)
 {
     t_all all;
     int i;
-    pthread_t *philosohers;
-    void *ph;
 
     i = 0;
     if (!(parse_and_check_argv(argc, argv, &all)))
-        return (print_error("WRONG ARGUMENTS"));
-    all.philo = (t_philo*)malloc(sizeof(t_philo) * all.arg.count_ph);
-    philosohers = (pthread_t *)malloc(sizeof(pthread_t) * all.arg.count_ph);
-    // if (!ph)
-    //     return print_error("ERROR MALLOC");
-    
-    while (i < all.arg.count_ph)
-    {
-        ph = (void*)&all.philo[i];
-        pthread_create(&philosohers[i], NULL, activity, ph);
-        pthread_detach(philosohers[i]);
-        i++;
-    }
+        return (1);
+    start_activity(&all, 0);
+	pthread_mutex_destroy(&all.info.ph_death);
+	pthread_mutex_destroy(&all.info.ph_print);
+	pthread_mutex_destroy(&all.info.ph_time);
+	free(all.info.forks);
     return (0);
 }

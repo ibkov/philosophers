@@ -4,35 +4,95 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-int mail = 0;
-pthread_mutex_t mutex;
 
-void *routine()
+
+typedef s_philo
 {
-    for (int i = 0; i < 1000000; i++)
-    {
-        pthread_mutex_lock(&mutex);
-        mail++;
-        pthread_mutex_unlock(&mutex);
-    }
+    int id;
+    
+}       t_philo;
+
+int	ft_strlen(const char *str)
+{
+	int		i;
+
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		i++;
+	}
+	return (i);
 }
 
-int main()
+int	ft_isdigit(int c)
 {
-    pthread_t p1,p2,p3,p4;
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
 
-    pthread_mutex_init(&mutex, NULL);
-    pthread_create(&p1, NULL, &routine, NULL);
-    pthread_create(&p2, NULL, &routine, NULL);
-    pthread_create(&p3, NULL, &routine, NULL);
-    pthread_create(&p4, NULL, &routine, NULL);
-    pthread_join(p1, NULL);
-    pthread_join(p2, NULL);
-    pthread_join(p3, NULL);
-    pthread_join(p4, NULL);
-    pthread_mutex_destroy(&mutex);
-    printf("%d", mail);
+int	ft_atoi(const char *str)
+{
+	int			minus_in_num;
+	long long	number;
+
+	minus_in_num = 0;
+	number = 0;
+	while ((*str >= 7 && *str <= 13) || *str == ' ')
+		str++;
+	if (*str == '-')
+		minus_in_num = 1;
+	if (*str == '-' || *str == '+')
+		str++;
+	while (ft_isdigit(*str))
+	{
+		number = number * 10 + (*str - 48);
+		str++;
+	}
+	if ((number > (number * 10)) && minus_in_num)
+		return (0);
+	if (number > (number * 10))
+		return (-1);
+	if (minus_in_num)
+		return ((int)number * -1);
+	return ((int)number);
+}
+
+int print_error(char *str)
+{
+    write(2, str, ft_strlen(str));
+    write(2, "\n", 1);
     return (0);
-
-
 }
+
+long int get_time_now()
+{
+	long int			time;
+	struct timeval		cur_time;
+
+	time = 0;
+	if (gettimeofday(&cur_time, NULL) == -1)
+		print_error("ERROR TO GET TIME");
+	time = (cur_time.tv_sec * 1000) + (cur_time.tv_usec / 1000);
+	return (time);
+}
+
+int main(int argc, char **argv)
+{
+    pthread_t philosohers[5];
+
+    for (int i = 0; i < 5; i++)
+        pthread_create(philosohers[i], NULL, eating, )
+
+
+    while (1)
+    {
+        printf("%ld\n", get_time_now());
+        usleep(1000000);
+    }
+    return 0;
+}
+ 
+
