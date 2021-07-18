@@ -42,10 +42,15 @@ int parse_and_check_argv(int argc, char **argv, t_all *all)
         all->time_to_sleep = ft_atoi(argv[4]);
         all->nbr_each_philo_to_eat = -1;
     }
+    else
+        return print_error("ERROR IN ARGUMENTS");
     if (argc == 6)
     {
         all->nbr_each_philo_to_eat = ft_atoi(argv[5]);
-        all->total_eat = all->nbr_each_philo_to_eat * all->count_ph;
+        if (all->nbr_each_philo_to_eat > 0)
+            all->total_eat = all->nbr_each_philo_to_eat * all->count_ph;
+        else
+            all->total_eat = -1;
     }
     if (!(check_negative(all)))
         return print_error("ERROR IN ARGUMENTS");
@@ -80,7 +85,7 @@ void	*status(void *ptr)
 			pthread_mutex_unlock(&ph->eating);
 			pthread_mutex_lock(&ph->main_info->ph_death);
 			printf("%lu %d is died\n", (get_time_now() - ph->main_info->start_time), ph->id);
-			return (0);
+            return (0);
 		}
 		else if (!ph->main_info->any_died && ph->end != -1 && \
 			 ph->start >= ph->end)
@@ -103,6 +108,7 @@ void	ft_print(t_philo *p, char *str)
 
 void	go_eat(t_philo *p)
 {
+    
 	pthread_mutex_lock(&p->main_info->forks[p->right_fork]);
 	ft_print(p, "has taken a fork");
 	pthread_mutex_lock(&p->main_info->forks[p->left_fork]);
@@ -132,7 +138,7 @@ void *each_activity(void *arg)
     if (pthread_create(&ch_dead, NULL, status, ph) != 0)
         return (0);
     pthread_detach(ch_dead);
-    if (!(ph->id % 2) && ph->main_info->time_to_eat > 1)
+    if ((ph->id % 2 == 0) && ph->main_info->time_to_eat > 1)
         ph_sleep(ph->main_info->time_to_eat);
     while (!ph->main_info->any_died && (ph->end == -1 || ph->start < ph->end))
         go_eat(ph);
