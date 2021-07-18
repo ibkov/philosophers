@@ -17,11 +17,11 @@ void				ph_sleep(int t)
 	int				delta;
 	int				start;
 
-	start = get_time_in_ms();
+	start = get_time_now();
 	delta = 0;
 	while (delta < t)
 	{
-		delta = get_time_in_ms() - start;
+		delta = get_time_now() - start;
 		usleep(100);
 	}
 }
