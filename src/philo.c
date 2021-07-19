@@ -47,7 +47,6 @@ void	init_phi(t_all *all, int *i)
 	all->philo[*i].left_fork = *i;
 	all->philo[*i].right_fork = (*i + 1) % all->count_ph;
 	all->philo[*i].id = *i + 1;
-	all->philo[*i].eat = 0;
 	if (all->nbr_each_philo_to_eat > 0)
 		all->philo[*i].end = all->nbr_each_philo_to_eat;
 	else

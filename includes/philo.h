@@ -16,7 +16,6 @@ typedef struct s_philo
 	int				right_fork;
 	int				start;
 	int				end;
-	int				eat;
 	long int		last_eat;
 	long int		time_to_live;
 	int				finish;

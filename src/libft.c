@@ -51,7 +51,8 @@ int	ft_atoi(const char *str)
 int	check_negative(t_all *philo)
 {
 	if (philo->count_ph <= 0 || philo->time_to_die <= 0 || \
-		philo->time_to_eat <= 0 || philo->time_to_sleep <= 0)
+		philo->time_to_eat <= 0 || philo->time_to_sleep <= 0 || \
+		philo->nbr_each_philo_to_eat == 0)
 		return (0);
 	return (1);
 }
